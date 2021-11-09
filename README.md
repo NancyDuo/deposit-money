@@ -1,2 +1,3 @@
 ### Redux in Typescript Practice
-### [Demo](https://o45et.csb.app/) on CodeSandbox 
+### [Demo](https://codesandbox.io/s/charming-mccarthy-4k27o) on CodeSandbox 
+
