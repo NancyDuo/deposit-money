@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef} from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux'
 import { bindActionCreators } from 'redux';
@@ -6,19 +6,27 @@ import { actionCreators, State } from './state';
 import { styled, Box } from '@mui/system';
 import SliderUnstyled from '@mui/core/SliderUnstyled'
 
+
 function App() {
   const dispatch = useDispatch()
   const { depositMoney, withdrawMoney, bankRupt } = bindActionCreators(actionCreators, dispatch)
   const amount = useSelector((state: State) => state.bank)
   const [sliderValue, setSliderValue] = useState<number>(0)
+
+  const depositRef = useRef<HTMLButtonElement| null>(null)
+  const withdrawRef = useRef<HTMLButtonElement| null>(null)
+
+  const [currentBtn,setCurrentBtn] = useState<string>('depositRef')
+
+  // slider style
   const StyledSlider = styled(SliderUnstyled)(
     () => `
   color: #EBECF0;
   height: 14px;
-  width: 100%;
+  width:80%;
   display: inline-block;
   position: relative;
-  margin:20px;
+  margin:20px 0px;
   cursor: pointer;
   opacity: 0.75;
   &:hover {
@@ -69,22 +77,38 @@ function App() {
   }
   `,
   );
+
   // set slider value to dispatch
   const hanldeSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       setSliderValue(newValue);
     }
   }
+
+  // clear slider value
+  const clearSlider = ()=>{
+    setSliderValue(0)
+  }
+
+  // handleDeposit
+  const handleDeposit = ()=>{
+    setCurrentBtn('depositRef')
+    depositMoney(sliderValue)
+  }
+    // handleDeposit
+    const handleWithdraw = ()=>{
+      setCurrentBtn('withdrawRef')
+      withdrawMoney(sliderValue)
+    }
+
   return (
     <div className="App">
 
-      <Box width={500}>
-
+      <Box>
         {/* current money */}
-        <h1 style={{ color: '#a3aab9' }}>Current Money : {amount}</h1>
-
+        <h2 style={{ color: '#a3aab9' }}>TOTAL : {amount}</h2>
         {/* slider */}
-        <StyledSlider defaultValue={50}
+        <StyledSlider
           step={1}
           max={1000}
           valueLabelDisplay="auto"
@@ -94,9 +118,10 @@ function App() {
 
         {/* buttons */}
         <div className='btn-wrapper'>
-          <button className='btn btn-default' onClick={() => depositMoney(sliderValue)}>DEPOSIT</button>
-          <button className='btn btn-default' onClick={() => withdrawMoney(sliderValue)}>WITHDRAW</button>
-          <button className='btn btn-default' onClick={() => bankRupt()}>BANKRUPT</button>
+          <button className={`btn ${currentBtn === 'depositRef'? 'active' : 'deactive'}`}  ref = {depositRef} onClick={handleDeposit}>DEPOSIT</button>
+          <button className={`btn ${currentBtn === 'withdrawRef'? 'active' : 'deactive'}`} ref = {withdrawRef} onClick={handleWithdraw}>WITHDRAW</button>
+          <button className='btn' onClick={() => bankRupt()}>BANKRUPT</button>
+          <button className='btn' onClick={clearSlider}>CLEAR</button>
         </div>
 
       </Box>
